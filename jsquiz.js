@@ -18,7 +18,7 @@ function setHeader(questionNumber){
 
 function setAnswer(elemId,questionNum,choiceNum){
 	var elem = document.getElementById(elemId);
-	elem.innerHTML = questions[questionNum].choices[choiceNum]
+	elem.innerHTML = questions[questionNum].choices[choiceNum];
 }
 
 function askQuestion(){
@@ -85,7 +85,10 @@ function validateForm(){
 		alert("Please select an answer");
 	}
 	return formValid;
-}		
+}
+
+// jQuery fading animation
+
 
 addEventListener('load',askQuestion);
 button.addEventListener('click',nextQuestion,false);
