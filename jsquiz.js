@@ -1,9 +1,3 @@
-var questions = [{question: "Whos the best bball player?", choices: ["Lebron James", "Kobe Bryant", "Kevin Durant", "Javale McGee"], correctAnswer:0},
-{question: "Name the Miami Heat player?", choices: ["Camelo Anthony", "Kevin Love", "Paul Pierce", "Dwayne Wade"], correctAnswer:3},
-{question: "Name the LA Lakers player?", choices: ["Lebron James", "Kobe Bryant", "Kevin Durant", "Javale McGee"], correctAnswer:1},
-{question: "What team does Melo play for?", choices: ["Chicago Bulls", "Utah Jazz", "New York Knicks", "Orlando Magic"], correctAnswer:2}
-];
-
 var score = 0;
 var questionNumber = 0;
 var button = document.getElementById('next');
