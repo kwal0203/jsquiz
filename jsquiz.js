@@ -84,6 +84,30 @@ function validateForm(){
 // jQuery fading animation
 
 
+function validate(){
+	var email = document.login.email.value;
+	var pass = document.login.password.value;
+	var valid = false;
+
+	var emailArray = ["kwal0203@gmail.com","Mike@gmail.com"];
+	var passArray = ["metta123","betta123"];
+
+	for(i = 0; i < emailArray.length; i++){
+		if((email = emailArray[i]) && (pass == passArray[i])){
+			valid = true;
+			break;
+		}
+	}
+
+	if(valid == true){
+		alert('login success');
+			// window.open('#');
+		return false;
+	} else {
+		alert('login unsuccessful');
+	}
+}
+
 addEventListener('load',askQuestion);
 button.addEventListener('click',nextQuestion,false);
 backButton.addEventListener('click',questionreview,false);
