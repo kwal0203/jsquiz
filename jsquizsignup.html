@@ -15,20 +15,21 @@
 		<label for="password" placeholder="Enter your password...">Password: </label>
 		<input id="password" type="password" name="password" id="password" />
 		<br />
-		<input type="submit" name="submit" id="submit" value="Signup" onclick="signups()"/>
+		<input type="submit" name="submit" id="submit" value="Signup" />
 	</form>
 	<script type="text/javascript" charset="utf-8">
 		var emailArray = [];
 		var passArray = [];
+		var signupButton = document.getElementById('submit');
 		function signups(){
 			var email = document.getElementById('email').value;
 			var pass = document.getElementById('password').value;
 			emailArray.push(email);
 			passArray.push(pass);
 			alert('You are now signed up');
-			//window.open('http://google.com');
-			console.log(emailArray[0]);
+			window.open('http://google.com');
 		}
+		signupButton.addEventListener('click',signups);
 	</script>
 </body>
 </html>

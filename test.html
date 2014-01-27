@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>||Working with elements||</title>
+</head>
+
+<script>
+var ele = null;
+function createEle(){
+    var ele = document.createElement("h1");
+    var text = document.createTextNode("hi mofos");
+    ele.appendChild(text);
+    document.body.appendChile(ele);
+}
+addEventListener('load',createEle());
+
+</script>
+
+<body onload="addElement()">
+<div id='org_div1'> The text above has been created dynamically.</div>
+</body>
+</html>

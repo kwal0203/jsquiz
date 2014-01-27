@@ -4,19 +4,16 @@
 
 <head>
     <title>The Basketball quiz</title>
-    <script src="jquery-2.0.3.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function()
-        {
-            $("#container").hide().fadeIn(1000);
-        });
-    </script>
+    <style type="text/css" media="all">
+	#question {
+		display: none;
+	}	
+    </style>
 </head>
 
 <body>
     <div id="container">
-        <h1>Welcome to the quiz</h1>
-        <h3 id="question"></h3>
+        <h1 id="welcome">Welcome to the quiz</h1>
 
         <input type="radio" name="choice" value="0" id="answ1">
         <label for="choice" id="choice_1"></label>
@@ -32,14 +29,9 @@
         <br>
         <button id="back">Back</button>
         <button id="next">Next</button>
+	<script src="jsquiz.js" type="text/javascript" charset="utf-8"></script>
+	<script src="jquery-2.0.3.js" type="text/javascript" charset="utf-8"></script>
     </div>
-    <script src="jsquiz.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" charset="utf-8">
-        $("#next").click(function()
-        {
-            $("#container").fadeOut(1000);
-        });
-    </script>
 </body>
 
 </html>
