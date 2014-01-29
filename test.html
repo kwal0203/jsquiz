@@ -1,22 +1,40 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-<title>||Working with elements||</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+	<title>Dynamic elements</title>
+	
 </head>
-
-<script>
-var ele = null;
-function createEle(){
-    var ele = document.createElement("h1");
-    var text = document.createTextNode("hi mofos");
-    ele.appendChild(text);
-    document.body.appendChile(ele);
-}
-addEventListener('load',createEle());
-
-</script>
-
-<body onload="addElement()">
-<div id='org_div1'> The text above has been created dynamically.</div>
+<body>
+	<h1 id="heading">Dynamic elements test</h1>
+	<div id="cont"></div>
+	
+	<script type="text/javascript" charset="utf-8">
+		var questions = [{question:"Is the sky blue?",choices:["yes","no","maybe","whatevs"]}];
+		function setQuestion(){
+			var questionElement = document.createElement("h3");
+			questionElement.setAttribute("id","question");
+			var questionText = document.createTextNode(questions[0].question);
+			questionElement.appendChild(questionText);
+			var parentReference = document.getElementById("heading");
+			var parentElement = parentReference.parentNode;
+			parentElement.insertBefore(questionElement,parentReference.nextSibling);
+		}
+		function createRadios(){
+			for(i = 0; i < questions[0].choices.length; i++){
+				var answerBox = document.getElementById("cont");
+			        var choiceElement = document.createElement("input");
+			        choiceElement.setAttribute("type","radio");
+			        choiceElement.setAttribute("name","choice");
+			        choiceElement.setAttribute("value","your a bitch");
+			        answerBox.appendChild(choiceElement);
+			}
+		}
+			 
+			     
+		addEventListener('load',setQuestion);
+		addEventListener('load',createRadios);
+	</script>
 </body>
 </html>

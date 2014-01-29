@@ -12,89 +12,72 @@ var questions = [{question: "Whos the best bball player?",
 var score = 0;
 var questionNumber = 0;
 var answdQuestions = [];
-var button = document.getElementById('next');
-var backButton = document.getElementById('back');
+var scriptBox = document.getElementById("scripts");
 
 // set question and answers
 
-function setHeader(questionNumber){
-	var containerDiv = document.getElementById("container");
-	var myDiv = document.getElementById("welcome");
-	var createEle = document.createElement("h3");
-	createEle.setAttribute("id","question");
-	console.log(createEle);
+function setHeader(){
+	var questionBox = document.createElement("div");
+	questionBox.setAttribute("id","question" + (questionNumber + 1));
+	document.body.insertBefore(questionBox,scriptBox);
+	var questionElement = document.createElement("h3");
+//	questionElement.setAttribute("id","question" + (questionNumber + 1));
 	var questionText = document.createTextNode(questions[questionNumber].question);
-	createEle.appendChild(questionText);
-	console.log(createEle);
-	document.body.appendChild(createEle);
+	questionElement.appendChild(questionText);
+	questionBox.appendChild(questionElement);
+	$(questionBox).hide().fadeIn(1000);
 }
 
-	
+function setChoices(){
+	var i;
+	var choiceBox = document.createElement("div");
+	choiceBox.setAttribute("id","choiceSet" + (questionNumber + 1));
+	document.body.insertBefore(choiceBox,scriptBox);
+	for(i=0;i<questions[questionNumber].choices.length;i++){
+		var choiceElement = document.createElement("input");
+		choiceElement.setAttribute("type","radio");
+		choiceElement.setAttribute("name","choice");
+		choiceElement.setAttribute("id","answ" + (i + 1));
+		choiceElement.setAttribute("value",i);
+		var labelElement = document.createElement("label");
+		labelElement.setAttribute("for","choice");
+		labelElement.setAttribute("id","choice_" + (i + 1));
+		labelElement.innerHTML = questions[questionNumber].choices[i] + "<br />";
+		choiceBox.appendChild(choiceElement);
+		choiceBox.appendChild(labelElement);
+	}
+	$(choiceBox).hide().fadeIn(1000);
+}
 
-
-//	questionElement.append(header);
-//
-//	var radioButtons = createRadios(index);
-//	questionElement.append(radioButtons);
-//
-//	return questionElement;
-//}
-
-//function createRadios(index){
-//	var radioList = $("<ul>");
-//	var item;
-//	var input = '';
-//	for(var i = 0; i < questions[questionNumber].choices.length; i++){
-//		item = $("<li>");
-//		input = '<input type="radio" name="choice" value=' + i + '>';
-//		input += questions[questionNumber].choices[i];
-//		item.append(input);
-//		radioList.append(item);
-//	}
-//	return radioList;
-//}
-
-
-//function setHeader(questionNumber){
-//	var question = document.getElementById('question');
-//	question.innerHTML = questions[questionNumber].question;
-//}
-
-function setAnswer(elemId,questionNum,choiceNum){
-	var elem = document.getElementById(elemId);
-	elem.innerHTML = questions[questionNum].choices[choiceNum];
+function setButtons(){
+	var backButton = document.createElement("button");
+	backButton.setAttribute("id","back");
+	backButton.innerHTML = "Back";
+	var nextButton = document.createElement("button");
+	nextButton.setAttribute("id","next");
+	nextButton.innerHTML = "Next";
+	document.body.insertBefore(backButton,scriptBox);
+	document.body.insertBefore(nextButton,scriptBox);
+	nextButton.addEventListener('click',nextQuestion,false);
+	backButton.addEventListener('click',questionreview,false);
+	$(nextButton).hide().fadeIn(1000);
+	$(backButton).hide().fadeIn(1000);
 }
 
 function askQuestion(){
 	if(answdQuestions[questionNumber] === undefined){
-		setHeader(questionNumber);
-		setAnswer("choice_1",questionNumber,0);
-		setAnswer("choice_2",questionNumber,1);
-		setAnswer("choice_3",questionNumber,2);
-		setAnswer("choice_4",questionNumber,3);
+		setHeader();
+		setChoices();
+		setButtons();
 	} 
 	
 	if (answdQuestions[questionNumber] !== undefined){
-		setHeader(questionNumber);
-		setAnswer("choice_1",questionNumber,0);
-		setAnswer("choice_2",questionNumber,1);
-		setAnswer("choice_3",questionNumber,2);
-		setAnswer("choice_4",questionNumber,3);
+		setHeader();
+		setChoices();
+		setButtons();
 		checks();
-		//var choices = document.querySelectorAll('input[name="choice"]');
-		//console.log(choices[answdQuestions[0]]);
-		//console.log(choices);
-		//console.log(choices[0]);
-		//console.log(answdQuestions[0]);
-		//console.log(answdQuestions);
-		//choices[answdQuestions[questionNumber]].checked = true;
-		//choices[1].checked = true;
-		//console.log(choices[0]);
-		//var test = document.getElementById('choice_1');
-		//test.checked = true;
-		//console.log(test);
-		
 	}
+
 }
 
 function checks(){
@@ -127,25 +110,50 @@ function updateScore(){
 		score++;
 	}
 	selectedAnswer();
+
 }
 
 // displays next question and set of choices when the 'next' button is clicked
+function removePrevious(){
+	var removeQuestion = document.getElementById("question" + questionNumber);
+	removeQuestion.parentNode.removeChild(removeQuestion);
+	var removeChoices = document.getElementById("choiceSet" + questionNumber);
+	removeChoices.parentNode.removeChild(removeChoices);
+	var removeBackButton = document.getElementById("back");
+	removeBackButton.parentNode.removeChild(removeBackButton);
+	var removeNextButton = document.getElementById("next");
+	removeNextButton.parentNode.removeChild(removeNextButton);
+}
 
 function nextQuestion(){
 	var validates = validateForm();
 	if(validates){
-		var removeElement = document.getElementById("question");
-		removeElement.parentNode.removeChild(removeElement);
+		console.log(questionNumber);
+		var fades = document.getElementById("question" + questionNumber);
+		console.log(fades);
+		$(fades).fadeOut(10000);
 		updateScore();
 		questionNumber++;
+		removePrevious();
 		showScore();
 		askQuestion();
 	}			
 }
 
 // sends user back to first question when 'back' button is clicked
+function removeCurrent(){
+	var removeQuestion = document.getElementById("question" + (questionNumber +1));
+	removeQuestion.parentNode.removeChild(removeQuestion);
+	var removeChoices = document.getElementById("choiceSet" + (questionNumber + 1));
+	removeChoices.parentNode.removeChild(removeChoices);
+	var removeBackButton = document.getElementById("back");
+	removeBackButton.parentNode.removeChild(removeBackButton);
+	var removeNextButton = document.getElementById("next");
+	removeNextButton.parentNode.removeChild(removeNextButton);
+}
 
 function questionreview(){
+	removeCurrent();
 	questionNumber = 0;
 	score = 0;
 	askQuestion();
@@ -207,6 +215,8 @@ function validate(){
 	}
 }
 
+
 addEventListener('load',askQuestion);
-button.addEventListener('click',nextQuestion,false);
-backButton.addEventListener('click',questionreview,false);
+
+//var nextButton = document.getElementById('next');
+//var backButton = document.getElementById('back');
