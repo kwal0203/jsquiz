@@ -1,78 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Box, Button, Typography, Radio, RadioGroup, FormControlLabel, Paper, Container } from '@mui/material';
+import { quizzes, Quiz, Question } from '../services/api';
 
-interface Choice {
-  text: string;
-  is_correct: boolean;
+interface QuizComponentProps {
+  quizId: string;
+  onComplete?: () => void;
 }
 
-interface Question {
-  question: string;
-  choices: Choice[];
-  category: string;
-}
-
-interface Quiz {
-  title: string;
-  description: string;
-  category: string;
-  questions: Question[];
-  created_by: string;
-  created_at: string;
-}
-
-const QuizComponent: React.FC<{ quizTitle: string }> = ({ quizTitle }) => {
+const QuizComponent: React.FC<QuizComponentProps> = ({ quizId, onComplete }) => {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedChoice, setSelectedChoice] = useState<number>(-1);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(`/api/quizzes/${quizTitle}`);
-        setQuiz(response.data);
-      } catch (error) {
-        console.error('Error fetching quiz:', error);
+        const data = await quizzes.getById(quizId);
+        setQuiz(data);
+      } catch (err) {
+        setError('Failed to load quiz');
+        console.error('Error fetching quiz:', err);
       }
     };
     fetchQuiz();
-  }, [quizTitle]);
+  }, [quizId]);
 
   const handleAnswerSubmit = async () => {
-    if (quiz && selectedChoice !== -1) {
+    if (quiz && selectedChoice) {
       try {
-        const response = await axios.post(
-          `/api/quizzes/validate/${quiz.title}/${currentQuestion}/${selectedChoice}`
+        const currentQuestionData = quiz.questions[currentQuestion];
+        const response = await quizzes.submitAnswer(
+          quiz.id,
+          currentQuestionData.id,
+          selectedChoice
         );
 
-        if (response.data.correct) {
+        if (response.correct) {
           setScore(score + 1);
         }
 
         if (currentQuestion < quiz.questions.length - 1) {
           setCurrentQuestion(currentQuestion + 1);
-          setSelectedChoice(-1);
+          setSelectedChoice(null);
         } else {
+          const result = await quizzes.completeQuiz(quiz.id);
           setShowResults(true);
+          onComplete?.();
         }
-      } catch (error) {
-        console.error('Error validating answer:', error);
+      } catch (err) {
+        setError('Failed to submit answer');
+        console.error('Error submitting answer:', err);
       }
     }
   };
 
   const handleRetry = () => {
     setCurrentQuestion(0);
-    setSelectedChoice(-1);
+    setSelectedChoice(null);
     setScore(0);
     setShowResults(false);
+    setError(null);
   };
 
+  if (error) {
+    return (
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+          <Typography color="error">{error}</Typography>
+          <Button onClick={handleRetry} variant="contained" sx={{ mt: 2 }}>
+            Try Again
+          </Button>
+        </Paper>
+      </Container>
+    );
+  }
+
   if (!quiz) {
-    return <Typography>Loading quiz...</Typography>;
+    return (
+      <Container maxWidth="sm">
+        <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
+          <Typography>Loading quiz...</Typography>
+        </Paper>
+      </Container>
+    );
   }
 
   if (showResults) {
@@ -110,20 +123,20 @@ const QuizComponent: React.FC<{ quizTitle: string }> = ({ quizTitle }) => {
             Question {currentQuestion + 1} of {quiz.questions.length}
           </Typography>
           <Typography variant="h6" sx={{ mt: 2 }}>
-            {currentQuestionData.question}
+            {currentQuestionData.question_text}
           </Typography>
         </Box>
 
         <RadioGroup
           value={selectedChoice}
-          onChange={(e) => setSelectedChoice(parseInt(e.target.value))}
+          onChange={(e) => setSelectedChoice(e.target.value)}
         >
-          {currentQuestionData.choices.map((choice, index) => (
+          {currentQuestionData.answers.map((answer) => (
             <FormControlLabel
-              key={index}
-              value={index}
+              key={answer.id}
+              value={answer.id}
               control={<Radio />}
-              label={choice.text}
+              label={answer.answer_text}
               sx={{ mb: 1 }}
             />
           ))}
@@ -133,7 +146,7 @@ const QuizComponent: React.FC<{ quizTitle: string }> = ({ quizTitle }) => {
           variant="contained"
           color="primary"
           onClick={handleAnswerSubmit}
-          disabled={selectedChoice === -1}
+          disabled={!selectedChoice}
           sx={{ mt: 3 }}
         >
           {currentQuestion === quiz.questions.length - 1 ? 'Finish' : 'Next'}
