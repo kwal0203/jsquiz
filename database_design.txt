@@ -1,0 +1,110 @@
+### 📌 Database Design for QuizMaster Application
+
+The database design efficiently stores quizzes, questions, answers, user data, and results. Below is a **relational database schema** optimized for **PostgreSQL or MySQL**.
+
+---
+
+## 📂 Tables & Relationships
+
+### 1️⃣ Users Table
+Stores user information and authentication details.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `username` (VARCHAR, Unique, Not Null)
+- `email` (VARCHAR, Unique, Not Null)
+- `password_hash` (TEXT, Not Null)
+- `role` (ENUM: user, admin, Default: "user")
+- `created_at` (TIMESTAMP, Default: NOW())
+
+✅ **Relationship:** Users can create quizzes and take quizzes.
+
+---
+
+### 2️⃣ Quizzes Table
+Stores metadata for each quiz.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `title` (VARCHAR, Not Null)
+- `description` (TEXT, Nullable)
+- `category` (VARCHAR, Indexed for filtering)
+- `difficulty` (ENUM: easy, medium, hard, Default: "medium")
+- `created_by` (UUID, Foreign Key referencing Users.id)
+- `created_at` (TIMESTAMP, Default: NOW())
+
+✅ **Relationship:** A user (admin) can create multiple quizzes.
+
+---
+
+### 3️⃣ Questions Table
+Stores questions belonging to a quiz.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `quiz_id` (UUID, Foreign Key referencing Quizzes.id, On Delete Cascade)
+- `question_text` (TEXT, Not Null)
+- `question_type` (ENUM: multiple-choice, true-false, text, Not Null)
+
+✅ **Relationship:** A quiz has multiple questions.
+
+---
+
+### 4️⃣ Answers Table
+Stores multiple-choice or correct answers for each question.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `question_id` (UUID, Foreign Key referencing Questions.id, On Delete Cascade)
+- `answer_text` (TEXT, Not Null)
+- `is_correct` (BOOLEAN, Default: False)
+
+✅ **Relationship:** A question can have multiple answers.
+
+---
+
+### 5️⃣ UserResponses Table
+Tracks individual user responses for each quiz attempt.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `user_id` (UUID, Foreign Key referencing Users.id)
+- `quiz_id` (UUID, Foreign Key referencing Quizzes.id)
+- `question_id` (UUID, Foreign Key referencing Questions.id)
+- `selected_answer_id` (UUID, Foreign Key referencing Answers.id)
+- `submitted_at` (TIMESTAMP, Default: NOW())
+
+✅ **Relationship:** Tracks each user's response for a quiz question.
+
+---
+
+### 6️⃣ Results Table
+Stores the final score of each quiz attempt by a user.
+
+**Columns:**
+- `id` (UUID, Primary Key)
+- `user_id` (UUID, Foreign Key referencing Users.id)
+- `quiz_id` (UUID, Foreign Key referencing Quizzes.id)
+- `score` (INT, Not Null)
+- `total_questions` (INT, Not Null)
+- `correct_answers` (INT, Not Null)
+- `completed_at` (TIMESTAMP, Default: NOW())
+
+✅ **Relationship:** A user can have multiple quiz attempts stored.
+
+---
+
+## 🔗 Entity Relationship Diagram (ERD)
+Below is the logical flow of how the tables interact:
+
+**Users → Quizzes → Questions → Answers**
+  |
+  |----> UserResponses
+  |
+  |----> Results
+
+- A **User** can create multiple **Quizzes**.
+- Each **Quiz** has multiple **Questions**.
+- Each **Question** has multiple **Answers**.
+- **UserResponses** track which answer a user selected.
+- **Results** store the final score after quiz completion.
